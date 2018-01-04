@@ -19,15 +19,13 @@ type LinkCountResult struct {
 	ShortendedUrls       int `json:"ShortendedUrls"`
 }
 
-func ComputeLinkCount(doc *goquery.Document, results chan LinkCountResult) {
+func ComputeLinkCount(doc *goquery.Document) LinkCountResult {
 	result := LinkCountResult{}
 	localdomain := doc.Url.Host
 
 	doc.Find("a").Each(func(i int, s *goquery.Selection) {
 		result.TotalLinks++
-		//linkText := s.Text()
 		link, exists := s.Attr("href")
-		//log.Println("foo=", linkText, link)
 
 		if exists {
 			if strings.Contains(link, localdomain) {
@@ -48,5 +46,5 @@ func ComputeLinkCount(doc *goquery.Document, results chan LinkCountResult) {
 		}
 
 	})
-	results <- result
+	return result
 }

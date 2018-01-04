@@ -21,5 +21,6 @@
 
 # vscode debug
 debug
+.vscode/launch.json
 
 vendor/*

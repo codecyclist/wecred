@@ -7,10 +7,26 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"m9d.de/wecred/features"
+	"m9d.de/wecred/scoring"
 )
 
+func gatherFeatures(doc *goquery.Document) scoring.FeaturesSet {
+	return scoring.FeaturesSet{
+		LinkCount:           features.ComputeLinkCount(doc),
+		WordFrequencyResult: features.ComputeWordFrequency(doc),
+		SiteTitlesResult:    features.ComputeSiteTitle(doc),
+	}
+}
+
+func executeScorings(featureSet scoring.FeaturesSet) (score scoring.Score) {
+	score.BaseScore = 10
+	for _, provider := range scoring.ScoreProviders {
+		score.Scorings = append(score.Scorings, provider(featureSet)...)
+	}
+	return
+}
+
 func main() {
-	//done := make(chan bool)
 	config, confError := BuildAppConfig()
 
 	if confError != nil {
@@ -22,33 +38,17 @@ func main() {
 
 	if err != nil {
 		log.Fatal(err)
-	}
+	} else {
+		featuresSet := gatherFeatures(doc)
+		score := executeScorings(featuresSet)
 
-	linkCount := make(chan features.LinkCountResult)
-	siteTitles := make(chan features.SiteTitlesResult)
-	wordFrequency := make(chan features.WordFrequencyResult)
-
-	go features.ComputeLinkCount(doc, linkCount)
-	//go features.ComputeSiteTitle(doc, siteTitles)
-	//go features.ComputeWordFrequency(doc, wordFrequency)
-
-	for {
-		select {
-		case linkCountResult := <-linkCount:
-			fmt.Println("Links:", linkCountResult)
-
-		case siteTitlesResult := <-siteTitles:
-			fmt.Println("Titles:", siteTitlesResult)
-
-		case wct := <-wordFrequency:
-			fmt.Println("TOtal Words", wct.TotalWords, " count:", wct.CountedWords)
-			for k, v := range wct.WordCounts {
-				if v > 4 {
-					fmt.Printf("%s %d \n\r", k, v)
-				}
+		if config.Verbose {
+			for _, v := range score.Scorings {
+				fmt.Println(v.Pretty())
 			}
-
 		}
+
+		fmt.Printf("Score=%d of %d\n", score.GetRating(), score.BaseScore)
 	}
 
 }

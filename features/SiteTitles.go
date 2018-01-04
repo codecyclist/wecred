@@ -11,11 +11,9 @@ type SiteTitlesResult struct {
 	URL      url.URL `json:"URL"`
 }
 
-func ComputeSiteTitle(doc *goquery.Document, results chan<- SiteTitlesResult) {
-	result := SiteTitlesResult{}
-
-	result.TitleTag = doc.Find("title").Contents().Text()
-	result.URL = *doc.Url
-
-	results <- result
+func ComputeSiteTitle(doc *goquery.Document) SiteTitlesResult {
+	return SiteTitlesResult{
+		TitleTag: doc.Find("title").Contents().Text(),
+		URL:      *doc.Url,
+	}
 }

@@ -6,19 +6,18 @@ import (
 )
 
 type AppConfig struct {
-	Url string
+	Url     string
+	Verbose bool
 }
 
 func BuildAppConfig() (config AppConfig, err error) {
-	config = AppConfig{}
-	err = nil
+	flag.BoolVar(&config.Verbose, "verbose", false, "Provide verbose output")
 
-	flag.StringVar(&config.Url, "url", "", "The URL of your site")
-	flag.Parse()
-	if config.Url == "" {
+	if flag.Parse(); len(flag.Args()) == 1 {
+		config.Url = flag.Args()[0]
+	} else {
 		flag.Usage()
-		err = errors.New("Please provide a valid site URI.")
+		err = errors.New("Please provide a valid site URL (i.E. http://example.com")
 	}
-
-	return config, err
+	return
 }
