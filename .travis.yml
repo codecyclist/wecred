@@ -1,0 +1,19 @@
+language: go
+
+before_script:
+  - go get github.com/PuerkitoBio/goquery
+
+script:
+   go build -o wecred -i .
+
+go:
+  - 1.8
+  - 1.9
+
+deploy:
+  provider: releases
+  api_key: "$GITHUB_API_KEY"
+  file: "wecred"
+  skip_cleanup: true
+  on:
+    tags: true
