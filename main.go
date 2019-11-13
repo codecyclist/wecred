@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/PuerkitoBio/goquery"
-	"m9d.de/wecred/features"
-	"m9d.de/wecred/scoring"
+	"github.com/codecyclist/wecred/features"
+	"github.com/codecyclist/wecred/scoring"
 )
 
 func gatherFeatures(doc *goquery.Document) scoring.FeaturesSet {
