@@ -3,7 +3,7 @@ package scoring
 import (
 	"fmt"
 
-	"m9d.de/wecred/features"
+	"github.com/codecyclist/wecred/features"
 )
 
 type Score struct {
